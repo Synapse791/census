@@ -1,0 +1,4 @@
+#!/bin/bash
+
+go build -o bin/census . || { exit 1; }
+go build -o bin/censusctl github.com/Synapse791/census/censusctl || { exit 1; }
