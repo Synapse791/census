@@ -13,6 +13,7 @@ import (
 
 var appConfig *config.CensusConfig
 var etcdApi client.KeysAPI
+var skipIteration bool
 
 func Run(c *config.CensusConfig) {
   appConfig = c
@@ -28,7 +29,6 @@ func Run(c *config.CensusConfig) {
 
   console.Line("Starting worker loop")
 
-  console.Line("Running iteration")
   if err := iteration(); err != nil {
     console.Error("Failed iteration: %s", err.Error())
   }
@@ -46,7 +46,18 @@ func iteration() error {
   var etcdErr error
 
   etcdApps, etcdErr = etcdApi.Get(context.Background(), fmt.Sprintf("%s/census/apps", appConfig.Etcd.Prefix), &client.GetOptions{Recursive: true})
-  if etcdErr != nil { return etcdErr }
+  if etcdErr != nil {
+    if strings.Contains(etcdErr.Error(), "Key not found") && ! skipIteration {
+      skipIteration = true
+      console.Warning("No census app data found in etcd. Skipping future iterations until data is found.")
+      return nil
+    } else if skipIteration {
+      return nil
+    }
+    return etcdErr
+  } else {
+    skipIteration = false
+  }
 
   var apps []LooperApp
 
