@@ -12,6 +12,9 @@ import (
 func getAppsHandler(c echo.Context) error {
   apps, err := etcdApi.Get(context.Background(), fmt.Sprintf("%s/census/apps", appConfig.Etcd.Prefix), &client.GetOptions{Recursive: true})
   if err != nil {
+    if strings.Contains(err.Error(), "Key not found") {
+      return c.String(http.StatusNotFound, "No apps found")
+    }
     server.Logger.Error(err.Error())
     return c.String(http.StatusInternalServerError, "Internal server error")
   }
