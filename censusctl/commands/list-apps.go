@@ -2,19 +2,13 @@ package commands
 
 import (
   "fmt"
-  "os"
-  "net/http"
-  "time"
   "encoding/json"
   "io/ioutil"
   "github.com/urfave/cli"
-  "github.com/olekukonko/tablewriter"
 )
 
 func ListApps(c *cli.Context) error {
-  netClient := &http.Client{
-    Timeout: time.Second * 10,
-  }
+  netClient := newHttpClient()
 
   response, resErr := netClient.Get(fmt.Sprintf("%s/apps", c.GlobalString("server-address")))
   if resErr != nil {
@@ -38,10 +32,7 @@ func ListApps(c *cli.Context) error {
     return cli.NewExitError(jsonErr.Error(), 1)
   }
 
-  table := tablewriter.NewWriter(os.Stdout)
-  table.SetAlignment(tablewriter.ALIGN_CENTER)
-  table.SetBorder(false)
-  table.SetCenterSeparator("-")
+  table := newTableWriter()
   table.SetHeader([]string{"Name", "Port"})
 
   for appName, appPort := range decodedRepsonse {
