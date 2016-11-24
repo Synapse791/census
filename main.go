@@ -3,10 +3,13 @@ package main
 import (
   "github.com/Synapse791/census/config"
   "github.com/Synapse791/census/server"
+  "github.com/Synapse791/census/looper"
 )
 
 func main() {
   appConfig := config.LoadConfig()
+
+  go looper.Run(appConfig)
 
   // read app list from etcd
   // if no apps (PREFIX/census/apps/*)

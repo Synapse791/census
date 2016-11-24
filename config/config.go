@@ -22,18 +22,18 @@ type CensusConfig struct {
 
 func LoadConfig() *CensusConfig {
   if ! utils.FileExists(CONFIG_PATH) {
-    console.Error("Config file not found: %s", CONFIG_PATH)
+    console.ErrorAndExit("Config file not found: %s", CONFIG_PATH)
   }
 
   rawConfig, err := utils.ReadFile(CONFIG_PATH)
   if err != nil {
-    console.Error(err.Error())
+    console.ErrorAndExit(err.Error())
   }
 
   appConfig := CensusConfig{}
 
   if err := yaml.Unmarshal(rawConfig, &appConfig); err != nil {
-    console.Error(err.Error())
+    console.ErrorAndExit(err.Error())
   }
 
   if appConfig.Server.Addr == "" {

@@ -32,6 +32,11 @@ func Warning(message string, args... interface{}) {
 func Error(message string, args... interface{}) {
   formattedMessage := fmt.Sprintf(message, args...)
   fmt.Fprintf(os.Stderr, "[\033[31m%s\033[00m]  [\033[31mERRO\033[00m]  \033[31m%s\033[00m\n", getTimestamp(), formattedMessage)
+}
+
+func ErrorAndExit(message string, args... interface{}) {
+  formattedMessage := fmt.Sprintf(message, args...)
+  fmt.Fprintf(os.Stderr, "[\033[31m%s\033[00m]  [\033[31mERRO\033[00m]  \033[31m%s\033[00m\n", getTimestamp(), formattedMessage)
   os.Exit(1)
 }
 
