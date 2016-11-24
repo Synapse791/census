@@ -2,11 +2,13 @@ package commands
 
 import (
   "fmt"
+  "os"
   "net/http"
   "time"
   "encoding/json"
   "io/ioutil"
   "github.com/urfave/cli"
+  "github.com/olekukonko/tablewriter"
 )
 
 func ListApps(c *cli.Context) error {
@@ -36,9 +38,17 @@ func ListApps(c *cli.Context) error {
     return cli.NewExitError(jsonErr.Error(), 1)
   }
 
+  table := tablewriter.NewWriter(os.Stdout)
+  table.SetAlignment(tablewriter.ALIGN_CENTER)
+  table.SetBorder(false)
+  table.SetCenterSeparator("-")
+  table.SetHeader([]string{"Name", "Port"})
+
   for appName, appPort := range decodedRepsonse {
-    fmt.Printf("  Name: %s, Port: %s\n", appName, appPort)
+    table.Append([]string{appName, appPort})
   }
+
+  table.Render()
 
   return nil
 }
