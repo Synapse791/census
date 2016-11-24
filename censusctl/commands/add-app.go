@@ -3,7 +3,6 @@ package commands
 import (
   "fmt"
   "net/http"
-  "time"
   "bytes"
   "encoding/json"
   "io/ioutil"
@@ -20,9 +19,7 @@ func AddApp(c *cli.Context) error {
     return cli.NewExitError("The port flag is required", 1)
   }
 
-  netClient := &http.Client{
-    Timeout: time.Second * 10,
-  }
+  netClient := newHttpClient()
 
   payload := server.PutAppRequest{}
   payload.Name = c.String("name")
@@ -52,10 +49,10 @@ func AddApp(c *cli.Context) error {
   }
 
   if response.StatusCode != 201 {
-    return cli.NewExitError(fmt.Sprintf("Failed to create app: %s", string(body)), 1)
+    return cli.NewExitError(fmt.Sprintf("Failed to add app: %s", string(body)), 1)
   }
 
-  fmt.Println("App created successfully")
+  fmt.Println("App added successfully")
 
   return nil
 }
