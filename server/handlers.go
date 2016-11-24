@@ -62,6 +62,9 @@ func putAppsHandler(c echo.Context) error {
 func getHostsHandler(c echo.Context) error {
   hosts, err := etcdApi.Get(context.Background(), fmt.Sprintf("%s/census/hosts", appConfig.Etcd.Prefix), &client.GetOptions{Recursive: true})
   if err != nil {
+    if strings.Contains(err.Error(), "Key not found") {
+      return c.String(http.StatusNotFound, "No hosts found")
+    }
     server.Logger.Error(err.Error())
     return c.String(http.StatusInternalServerError, "Internal server error")
   }
